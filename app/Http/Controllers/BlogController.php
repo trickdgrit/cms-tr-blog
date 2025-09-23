@@ -2,113 +2,101 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Carbon\Carbon;
+use App\Models\Blog; // Menggunakan Eloquent Model
+use Illuminate\View\View; // Best practice untuk memanggil View
 
 class BlogController extends Controller
 {
-    private function getBlogData()
-    {
-        // Memeriksa jika data tidak ada di session, maka buat data default.
-        if (!Session::has('blog')) {
-            Session::put('blog', [
-                ['id' => 'blog-1', 'judul' => 'Festival Bale Nagi 2025 Kembali Digelar', 'kategori' => 'Pariwisata', 'konten' => 'Festival tahunan Bale Nagi akan kembali menyapa masyarakat Flores Timur dengan berbagai atraksi budaya dan pameran ekonomi kreatif. Acara ini diharapkan dapat menarik wisatawan domestik maupun mancanegara.', 'tanggal_publikasi' => Carbon::now()->subDays(2)->toDateTimeString()],
-                ['id' => 'blog-2', 'judul' => 'Pemkab Flotim Salurkan Bantuan untuk Korban Banjir', 'kategori' => 'Sosial', 'konten' => 'Pemerintah Kabupaten Flores Timur bergerak cepat menyalurkan bantuan logistik dan kebutuhan pokok kepada warga yang terdampak bencana banjir di wilayah Ile Ape.', 'tanggal_publikasi' => Carbon::now()->subDays(1)->toDateTimeString()],
-                ['id' => 'blog-3', 'judul' => 'Peningkatan Kualitas Jalan Menuju Obyek Wisata', 'kategori' => 'Infrastruktur', 'konten' => 'Dinas Pekerjaan Umum mengalokasikan dana untuk perbaikan dan pelebaran jalan menuju lokasi wisata unggulan seperti Pantai Oa dan Danau Asmara untuk meningkatkan aksesibilitas.', 'tanggal_publikasi' => Carbon::now()->toDateTimeString()],
-            ]);
-        }
-        return Session::get('blog');
-    }
-
-    private function setBlogData($data)
-    {
-        Session::put('blog', $data);
-    }
-
+    /**
+     * Menampilkan daftar semua postingan blog.
+     * Mengambil data langsung dari database.
+     */
     public function index(): View
     {
-        $data = $this->getBlogData();
-        $kategoriCounts = array_count_values(array_column($data, 'kategori'));
+        // Mengambil semua data dari model Blog, diurutkan berdasarkan tanggal terbaru
+        $data = Blog::latest('tanggal_publikasi')->paginate(10); // Menggunakan paginasi
+
+        // Menghitung jumlah postingan per kategori untuk chart
+        $kategoriCounts = Blog::selectRaw('kategori, count(*) as count')
+            ->groupBy('kategori')
+            ->pluck('count', 'kategori');
+
         $chartData = [
-            'labels' => array_keys($kategoriCounts),
-            'data'   => array_values($kategoriCounts),
+            'labels' => $kategoriCounts->keys()->toArray(),
+            'data'   => $kategoriCounts->values()->toArray(),
         ];
+
         return view('blog.index', compact('data', 'chartData'));
     }
 
+    /**
+     * Menampilkan formulir untuk membuat postingan baru.
+     */
     public function create(): View
     {
-        return view('blog.create');
+        // Mengirimkan model Blog baru agar form-binding lebih mudah
+        return view('blog.create', ['blog' => new Blog()]);
     }
 
+    /**
+     * Menyimpan postingan baru ke database.
+     */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        // Validasi input
+        $validatedData = $request->validate([
             'judul' => 'required|string|max:255',
-            'kategori' => 'required|string|in:Pariwisata,Sosial,Infrastruktur,Pemerintahan,Ekonomi',
+            'kategori' => 'required|string|in:Pariwisata,Sosial,Infrastruktur,Pemerintahan,Ekonomi,Pendidikan,Kesehatan',
             'konten' => 'required|string',
             'tanggal_publikasi' => 'required|date',
         ]);
 
-        $data = $this->getBlogData();
-        $data[] = [
-            'id' => 'blog-' . Str::uuid(),
-            'judul' => $request->judul,
-            'kategori' => $request->kategori,
-            'konten' => $request->konten,
-            'tanggal_publikasi' => $request->tanggal_publikasi,
-        ];
-        $this->setBlogData($data);
+        // Membuat record baru di database menggunakan Eloquent
+        Blog::create($validatedData);
 
         return redirect()->route('blog.index')->with('success', 'Postingan berhasil ditambahkan.');
     }
 
-    public function edit(string $id): View
+    /**
+     * Menampilkan formulir untuk mengedit postingan yang ada.
+     */
+    public function edit(Blog $blog): View // Route Model Binding
     {
-        $data = $this->getBlogData();
-        $detailData = collect($data)->firstWhere('id', $id);
-        if (!$detailData) abort(404);
-        return view('blog.edit', ['data' => $detailData]);
+        // Laravel akan otomatis mencari Blog berdasarkan ID dan melempar 404 jika tidak ditemukan
+        return view('blog.edit', ['data' => $blog]);
     }
 
-    public function update(Request $request, string $id): RedirectResponse
+    /**
+     * Memperbarui postingan di database.
+     */
+    public function update(Request $request, Blog $blog): RedirectResponse // Route Model Binding
     {
-        $request->validate([
+        // Validasi input
+        $validatedData = $request->validate([
             'judul' => 'required|string|max:255',
-            'kategori' => 'required|string|in:Pariwisata,Sosial,Infrastruktur,Pemerintahan,Ekonomi',
+            'kategori' => 'required|string|in:Pariwisata,Sosial,Infrastruktur,Pemerintahan,Ekonomi,Pendidikan,Kesehatan',
             'konten' => 'required|string',
             'tanggal_publikasi' => 'required|date',
         ]);
 
-        $data = $this->getBlogData();
-        $index = collect($data)->search(fn($item) => $item['id'] == $id);
-        if ($index === false) {
-            return redirect()->route('blog.index')->with('error', 'Data tidak ditemukan.');
-        }
-
-        $data[$index] = [
-            'id' => $id,
-            'judul' => $request->judul,
-            'kategori' => $request->kategori,
-            'konten' => $request->konten,
-            'tanggal_publikasi' => $request->tanggal_publikasi,
-        ];
-        $this->setBlogData($data);
+        // Memperbarui record di database
+        $blog->update($validatedData);
 
         return redirect()->route('blog.index')->with('success', 'Postingan berhasil diperbarui.');
     }
 
-    public function destroy(string $id): RedirectResponse
+    /**
+     * Menghapus postingan dari database.
+     */
+    public function destroy(Blog $blog): RedirectResponse // Route Model Binding
     {
-        $data = $this->getBlogData();
-        $data = array_values(array_filter($data, fn($item) => $item['id'] != $id));
-        $this->setBlogData($data);
+        // Menghapus record dari database
+        $blog->delete();
 
         return redirect()->route('blog.index')->with('success', 'Postingan berhasil dihapus.');
     }
 }
-
