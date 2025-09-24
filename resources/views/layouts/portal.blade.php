@@ -43,8 +43,9 @@
                         <a href="{{ route('portal.index') }}" class="text-gray-600 hover:text-blue-600 transition">Beranda</a>
                         <a href="{{ route('portal.kependudukan') }}" class="text-gray-600 hover:text-blue-600 transition">Kependudukan</a>
                         {{-- Tautan menu lain bisa ditambahkan di sini --}}
-                        <a href="#" class="text-gray-600 hover:text-blue-600 transition">Pendidikan</a>
-                        <a href="#" class="text-gray-600 hover:text-blue-600 transition">Kesehatan</a>
+                        <a href="{{ route('portal.pendidikan') }}" class="text-gray-600 hover:text-blue-600 transition">Pendidikan</a>
+                        <a href="{{ route('portal.kesehatan') }}" class="text-gray-600 hover:text-blue-600 transition">Kesehatan</a>
+                        <a href="{{ route('portal.blog.index') }}" class="text-gray-600 hover:text-blue-600 transition">Berita</a>
                     </div>
                     
                     <!-- Tombol Login/Admin -->

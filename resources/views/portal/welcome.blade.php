@@ -59,7 +59,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($latestPosts as $post)
             {{-- PERUBAHAN DI BARIS BERIKUT --}}
-            <a href="{{ url('/berita/' . ($post['id'] ?? '')) }}" class="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+            <a href="{{ url('/blog/' . ($post['id'] ?? '')) }}" class="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
                 <img class="h-56 w-full object-cover" src="https://placehold.co/600x400/1D4ED8/FFFFFF?text=Berita" alt="Gambar Berita">
                 <div class="p-6">
                     <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ $post['kategori'] ?? 'Umum' }}</span>
