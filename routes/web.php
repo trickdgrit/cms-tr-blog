@@ -26,7 +26,7 @@ Route::get('/portal/kependudukan', [PortalController::class, 'kependudukan'])->n
 Route::get('/portal/pendidikan', [PortalController::class, 'pendidikan'])->name('portal.pendidikan');
 Route::get('/portal/kesehatan', [PortalController::class, 'kesehatan'])->name('portal.kesehatan');
 Route::get('/berita', [PortalController::class, 'blogIndex'])->name('portal.blog.index');
-Route::get('/berita/{id}', [PortalController::class, 'showPost'])->name('portal.blog.show');
+Route::get('/berita/{slug}', [PortalController::class, 'showPost'])->name('portal.blog.show');
 
 
 // =========================================================================
