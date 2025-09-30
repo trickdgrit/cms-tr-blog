@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
-use App\Models\Kesehatan;
-use Illuminate\View\View;
-use App\Models\Pendidikan;
-use App\Models\Kependudukan;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use App\Models\Kependudukan;
+use App\Models\Pendidikan;
+use App\Models\Kesehatan;
+use App\Models\Post;
 
 class PortalController extends Controller
 {
@@ -50,8 +51,27 @@ class PortalController extends Controller
 
         return view('portal.kependudukan', compact('data', 'chartData', 'role'));
     }
+
     /**
-     * Menampilkan halaman detail Pendidikan dari database.
+     * Menampilkan halaman detail postingan blog dari database.
+     * Menggunakan Route Model Binding dengan slug.
+     */
+    public function showPost(Request $request, Blog $post): View
+    {
+        $role = $request->query('role', 'public');
+
+        // --- PERBAIKAN DI SINI ---
+        // Memeriksa apakah model yang di-binding benar-benar ada di database.
+        // Jika tidak (misalnya slug tidak cocok), tampilkan halaman 404.
+        if (!$post->exists) {
+            abort(404);
+        }
+
+        return view('portal.blog.blog_detail', compact('post', 'role'));
+    }
+
+    /**
+     * Menampilkan halaman detail pendidikan dari database.
      */
     public function pendidikan(Request $request): View
     {
@@ -84,24 +104,6 @@ class PortalController extends Controller
         ];
 
         return view('portal.kesehatan', compact('data', 'chartData', 'role'));
-    }
-
-    /**
-     * Menampilkan halaman detail postingan blog dari database.
-     */
-    // --- PERBAIKAN DI BARIS BERIKUT ---
-    public function showPost(string $id): View
-    {
-       
-       // Menggunakan helper request() global, bukan $request yang di-inject.
-        $role = request()->query('role', 'public');
-
-        //$role = $request->query('role', 'public');
-
-        // Cari postingan berdasarkan ID di database, jika tidak ada akan menampilkan 404
-        $post = Blog::findOrFail($id);
-
-        return view('portal.blog.blog_detail', compact('post', 'role'));
     }
 
     /**

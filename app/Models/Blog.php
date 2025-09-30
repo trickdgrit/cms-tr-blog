@@ -26,6 +26,9 @@ class Blog extends Model
         'judul',
         'kategori',
         'konten',
+        "slug",
+        'gambar',
+        'nama_penulis',
         'tanggal_publikasi',
     ];
 

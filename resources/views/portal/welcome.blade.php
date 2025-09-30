@@ -58,18 +58,16 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($latestPosts as $post)
-            {{-- PERUBAHAN DI BARIS BERIKUT --}}
-            <a href="{{ url('/blog/' . ($post['id'] ?? '')) }}" class="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-                <img class="h-56 w-full object-cover" src="https://placehold.co/600x400/1D4ED8/FFFFFF?text=Berita" alt="Gambar Berita">
+            {{-- Menggunakan Route Model Binding dengan mengirim seluruh objek $post --}}
+            <a href="{{ route('portal.blog.show', $post) }}" class="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                {{-- Menampilkan gambar dari storage, atau placeholder jika tidak ada --}}
+                <img class="h-56 w-full object-cover" src="{{ $post->gambar ? asset('storage/' . $post->gambar) : 'https://placehold.co/600x400/1D4ED8/FFFFFF?text=Berita' }}" alt="{{ $post->judul }}">
                 <div class="p-6">
-                    <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ $post['kategori'] ?? 'Umum' }}</span>
-                    <h3 class="mt-4 font-bold text-xl text-gray-900">{{ $post['judul'] ?? 'Judul Tidak Tersedia' }}</h3>
+                    <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ $post->kategori }}</span>
+                    <h3 class="mt-4 font-bold text-xl text-gray-900">{{ $post->judul }}</h3>
                     <p class="mt-2 text-gray-600 text-sm">
-                        {{ \Illuminate\Support\Str::limit($post['konten'] ?? 'Konten tidak tersedia.', 120) }}
+                        Oleh: <span class="font-semibold">{{ $post->nama_penulis }}</span> pada {{ $post->tanggal_publikasi->format('d M Y') }}
                     </p>
-                    <div class="mt-4 flex items-center">
-                        <p class="text-sm text-gray-500">Dipublikasikan pada {{ \Carbon\Carbon::parse($post['tanggal_publikasi'] ?? now())->format('d M Y') }}</p>
-                    </div>
                 </div>
             </a>
             @empty

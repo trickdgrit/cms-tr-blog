@@ -17,7 +17,7 @@ Route::get('/portal/kesehatan', [PortalController::class, 'kesehatan'])->name('p
 
 // --- BARIS INI YANG MEMPERBAIKI ERROR ---
 // Halaman Detail Berita/Blog
-Route::get('/berita/{id}', [PortalController::class, 'showPost'])->name('portal.blog.show');
+Route::get('/berita/{slug}', [PortalController::class, 'showPost'])->name('portal.blog.show');
 
 // Halaman Indeks Berita/Blog
 Route::get('/berita', [PortalController::class, 'blogIndex'])->name('portal.blog.index');
