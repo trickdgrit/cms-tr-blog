@@ -19,7 +19,6 @@
                 <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">{{ $post->judul ?? 'Judul Tidak Tersedia' }}</h1>
                 <p class="mt-4 text-gray-500">
                     Oleh <span class="font-semibold text-gray-700">{{ $post->nama_penulis ?? 'Admin' }}</span> | Dipublikasikan pada 
-                    {{-- PERBAIKAN DI BARIS BERIKUT --}}
                     {{ $post->tanggal_publikasi ? $post->tanggal_publikasi->format('d F Y') : 'Tanggal tidak ditentukan' }}
                 </p>
             </header>

@@ -17,7 +17,6 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    // Mengarahkan pengguna yang login ke dashboard admin
     public const HOME = '/admin/dashboard';
 
     /**
@@ -30,24 +29,26 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
-            // Rute untuk API
+            // Rute API
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            // Rute untuk Portal Publik
+            // Rute Web (untuk autentikasi dari Breeze)
             Route::middleware('web')
-                ->group(base_path('routes/portal.php'));
+                ->group(base_path('routes/web.php'));
+            
+            // --- PERUBAHAN UTAMA DI SINI ---
 
-            // Rute untuk Dashboard Admin
+            // Memuat Rute Admin
             Route::middleware(['web', 'auth'])
                 ->prefix('admin')
                 ->group(base_path('routes/admin.php'));
 
-            // Rute untuk Autentikasi (dari file web.php)
+            // Memuat Rute Portal Publik
             Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+                ->group(base_path('routes/portal.php'));
         });
     }
-}
 
+}

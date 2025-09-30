@@ -8,7 +8,6 @@ use Illuminate\View\View;
 use App\Models\Kependudukan;
 use App\Models\Pendidikan;
 use App\Models\Kesehatan;
-use App\Models\Post;
 
 class PortalController extends Controller
 {
@@ -63,9 +62,9 @@ class PortalController extends Controller
         // --- PERBAIKAN DI SINI ---
         // Memeriksa apakah model yang di-binding benar-benar ada di database.
         // Jika tidak (misalnya slug tidak cocok), tampilkan halaman 404.
-        if (!$post->exists) {
-            abort(404);
-        }
+        //if (!$post->exists) {
+        //    abort(404);
+        //}
 
         return view('portal.blog.blog_detail', compact('post', 'role'));
     }

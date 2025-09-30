@@ -1,5 +1,6 @@
 <?php
 
+// PERBAIKAN: Pastikan semua 'use' statement menggunakan '\'
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KependudukanController;
@@ -11,38 +12,47 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\ProfileController;
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-|
-| Di sini adalah tempat Anda mendaftarkan semua rute untuk bagian
-| dashboard admin. Semua rute di file ini secara otomatis akan
-| memiliki prefix '/admin' dan dilindungi oleh middleware 'auth'.
-|
-*/
+// Rute-rute ini secara otomatis memiliki prefix '/admin' dan dilindungi middleware 'auth'
+// seperti yang diatur di RouteServiceProvider.php
 
 // Redirect dari /admin ke /admin/dashboard
 Route::get('/', function () {
-    return redirect()->route('admin.dashboard');
+    return redirect()->route('dashboard');
 });
 
-// Rute Dashboard Utama - nama diubah menjadi admin.dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+// Rute Dashboard Utama
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Rute CRUD untuk setiap modul
-Route::resource('kependudukan', KependudukanController::class)->names('admin.kependudukan');
-Route::resource('pendidikan', PendidikanController::class)->names('admin.pendidikan');
-Route::resource('kesehatan', KesehatanController::class)->names('admin.kesehatan');
-Route::resource('anggaran', AnggaranController::class)->names('admin.anggaran');
-Route::resource('sarana', SaranaPrasaranaController::class)->names('admin.sarana');
-Route::resource('blog', BlogController::class)->names('admin.blog');
+Route::resource('kependudukan', KependudukanController::class);
+Route::resource('pendidikan', PendidikanController::class);
+Route::resource('kesehatan', KesehatanController::class);
+Route::resource('anggaran', AnggaranController::class);
+Route::resource('sarana', SaranaPrasaranaController::class);
+Route::resource('blog', BlogController::class);
 
 // Rute untuk Menu Pengaturan
-Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('admin.pengaturan.index');
-Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('admin.pengaturan.update');
+Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
 
-// Rute Profile bawaan Breeze (juga diproteksi)
-Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile.edit');
-Route::patch('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
-Route::delete('/profile', [ProfileController::class, 'destroy'])->name('admin.profile.destroy');
+// Rute Profile bawaan Breeze
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+```
+
+### Langkah Terakhir (Wajib)
+
+Setelah Anda menyimpan perubahan pada file `routes/admin.php`, jalankan kembali dua perintah ini di terminal Anda:
+
+1.  Bersihkan semua cache:
+    ```bash
+    php artisan optimize:clear
+    ```
+2.  Verifikasi daftar rute:
+    ```bash
+    php artisan route:list
+    
+
