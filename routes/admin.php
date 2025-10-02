@@ -39,20 +39,3 @@ Route::put('/pengaturan', [PengaturanController::class, 'update'])->name('pengat
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
-```
-
-### Langkah Terakhir (Wajib)
-
-Setelah Anda menyimpan perubahan pada file `routes/admin.php`, jalankan kembali dua perintah ini di terminal Anda:
-
-1.  Bersihkan semua cache:
-    ```bash
-    php artisan optimize:clear
-    ```
-2.  Verifikasi daftar rute:
-    ```bash
-    php artisan route:list
-    
-
